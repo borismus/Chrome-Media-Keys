@@ -1,0 +1,14 @@
+Extension for people that listen to music on the web to map shortcuts to music player actions. Currently only works for thesixtyone.com.
+
+How it works:
+- inject.js injected into all tabs, listens for keystroke (F7 - F9)
+- t61.js injected into thesixtyone.com, listens for messages from inject.js and reacts accordingly
+
+V2:
+- let people bind their own keystrokes
+- option: if not loaded, load music player on play (optionally, in pinned tab)
+
+V3:
+- option: on song change, show background page with name of new song
+	(impl: hard... poll for song change?)
+- support other music services (?)

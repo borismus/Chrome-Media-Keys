@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>Media Keys Options</title>
+<style>
+form {width: 300px;}
+input {display: block;}
+</style>
+</head>
+<script src="jquery.js"></script>
+<script type="text/javascript">
+
+var keyIds = ['previous', 'playpause', 'next'];
+
+// Saves form options to localStorage.
+function save_options() {
+	$.each(keyIds, function(index, item) {
+    var element = $('#' + item);
+    localStorage[item] = JSON.stringify({
+      keyCode: element.data('keyCode'),
+			altKey: element.data('altKey'),
+			ctrlKey: element.data('ctrlKey'),
+			shiftKey: element.data('shiftKey'),
+      val: element.val()
+    });
+  });
+	localStorage['notify'] = $('#notify').attr('checked') === true ? true : '';
+	localStorage['autoload'] = $('#autoload').attr('checked') === true ? true : '';
+
+  $('#status').text("Options Saved.");
+  setTimeout(function() {
+    $('#status').empty();
+  }, 1250);
+}
+
+// Restores form state to saved value from localStorage.
+function restore_options() {
+	$.each(keyIds, function(index, item) {
+    var element = $('#' + item);
+    var savedItem = JSON.parse(localStorage[item]);
+    element.data('keyCode', savedItem['keyCode'])
+           .data('altKey', savedItem['altKey'])
+           .data('ctrlKey', savedItem['ctrlKey'])
+           .data('shiftKey', savedItem['shiftKey'])
+           .val(savedItem['val']);
+  });
+  $('#notify').attr('checked', localStorage['notify']);
+  $('#autoload').attr('checked', localStorage['autoload']);
+}
+
+function init() {
+  $('#previous, #playpause, #next').keydown(function(event) {
+    // Get modifiers on the keyboard event
+    $(this).data('keyCode', event.keyCode)
+           .data('altKey', event.altKey)
+           .data('ctrlKey', event.ctrlKey)
+           .data('shiftKey', event.shiftKey);
+    var mods = (event.altKey ? 'M - ' : '')
+    				 + (event.ctrlKey ? 'C - ' : '')
+             + (event.shiftKey ? 'S - ' : '');
+    $(this).val(mods + event.keyCode);
+    event.preventDefault();
+  });
+
+  restore_options();
+}
+
+
+
+</script>
+
+<body onload="init()">
+
+<form>
+<fieldset id="keys">
+<legend>Keyboard Shortcuts</legend>
+<label for="previous">Previous</label>
+<input id="previous"/>
+
+<label for="playpause">Play/Pause</label>
+<input id="playpause"/>
+
+<label for="next">Next</label>
+<input id="next"/>
+</fieldset>
+
+<fieldset id="options">
+<legend>Other Options</legend>
+<label for="autoload">Auto load player if not loaded</label>
+<input type="checkbox" id="autoload"/>
+
+<label for="notify">Notify on song change</label>
+<input type="checkbox" id="notify" disabled="true"/>
+</fieldset>
+</form>
+
+<button onclick="save_options()">Save</button>
+
+<section id="status">
+</section>
+</body>
+</html>

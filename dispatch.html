@@ -1,0 +1,52 @@
+<!--
+Dispatcher connects key logging in key.js to music player control in t61.js
+
+key.js sends request.command
+t61.js sends request.register to register tabID
+-->
+<script src="jquery.js"></script>
+<script>
+var SITE_URL = 'http://www.thesixtyone.com';
+// Open channel for music player control
+var port = null;
+
+chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+    switch(request.type) {
+      case 'command':
+        console.log('dispatch command: ' + request.command);
+        try {
+          port.postMessage(request.command);
+        } catch(error) {
+          console.log('error: no music tab open');
+          // If preference is set, launch music tab here
+          if (localStorage['autoload']) {
+            chrome.tabs.create({url: SITE_URL});
+          }
+        }
+        sendResponse({});
+        break;
+      case 'register':
+        console.log('dispatch got register');
+        chrome.tabs.getSelected(null, function(tab) {
+          port = chrome.tabs.connect(tab.id);
+          sendResponse({});
+        });
+        break;
+      case 'key':
+        console.log('dispatch got keycode request');
+        sendResponse(getCommandShortcuts());
+        break;
+    }
+  }
+);
+
+function getCommandShortcuts(command) {
+  var keyIds = ['previous', 'playpause', 'next'];
+  var out = {};
+  $.each(keyIds, function(index, item) {
+    out[item] = JSON.parse(localStorage[item]);
+  });
+  return out;
+}
+</script>
