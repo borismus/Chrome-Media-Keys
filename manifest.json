@@ -1,8 +1,8 @@
 {
   "name": "Media Keys",
   "version": "0.1",
-  "description": "",
-  "permissions": ["tabs", "notifications"],
+  "description": "Control your web-based music player with keyboard shortcuts",
+  "permissions": ["tabs"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
